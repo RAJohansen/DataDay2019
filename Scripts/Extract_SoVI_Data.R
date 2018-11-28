@@ -1,5 +1,5 @@
+###EXTRACT SoVI data from web---------------------------------------------------
 library(tidyverse)
-#install.packages("tabulizer")
 library(tabulizer)
 library(dplyr)
 
@@ -23,3 +23,29 @@ names(final) <- headers
 
 # Write final table to disk
 write.csv(final, file='C:/temp/SoVI.csv', row.names=FALSE)
+
+
+
+### Convert SoVI text data to spatial objects ----------------------------------
+#Install Libraries needed
+library(tigris)
+library(sp)
+library(tmap)
+
+#Import Data Set
+df <- read.csv('C:/R_Packages/DataDay2019/Data/SoVI.csv')
+
+#Add column that will match the format of counties spatial object 
+df$GEOID <- df$FIP_Code
+
+#Add Counties Spatial Object Data
+Counties <- counties()
+
+#Merge SoVI with county.region spatial object
+US_SoVI <- merge(Counties,df, by = "GEOID", all = FALSE)
+
+#Plot Map
+map<- qtm(US_SoVI, fill = "CNTY_SoVI")
+map + tm_basemap(server = "OpenTopoMap")
+
+
