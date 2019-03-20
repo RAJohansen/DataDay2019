@@ -1,4 +1,8 @@
 ###EXTRACT SoVI data from web---------------------------------------------------
+#install.packages(c(tigris,tmap,tidyverse,tablulizer,dplyr))
+
+library(tigris)
+library(tmap)
 library(tidyverse)
 library(tabulizer)
 library(dplyr)
@@ -29,7 +33,6 @@ write.csv(final, file='C:/temp/SoVI.csv', row.names=FALSE)
 ### Convert SoVI text data to spatial objects ----------------------------------
 #Install Libraries needed
 library(tigris)
-library(sp)
 library(tmap)
 
 #Import Data Set
