@@ -1,14 +1,30 @@
-###EXTRACT SoVI data from web---------------------------------------------------
+#######################
+### Data Day 2019   ###
+###   Power Session ###
+#######################
+
+# Title: Interactive mapping of social vulnerability caused by climate change using R
+# Authors: Richard Johansen & Mark Chalmers
+# University of Cincinnati Libraries
+# 4/1/2019
+
+# Social Vulnerability Data: http://artsandsciences.sc.edu/geog/hvri
+# Code: https://github.com/RAJohansen/DataDay2019
+
+
+########################### PART I:Data Acquisition############################ 
+
+# Step 1: Install & load required packages 
 #install.packages(c(tigris,tmap,tidyverse,tablulizer,dplyr))
-#test
 library(tigris)
 library(tmap)
 library(tidyverse)
 library(tabulizer)
 library(dplyr)
 
-# Location of WARN notice pdf file
-location <- 'http://artsandsciences.sc.edu/geog/hvri/sites/sc.edu.geog.hvri/files/attachments/SoVI_10_14_Website.pdf'
+# Step 2: Convert a PDF from the web into a usable table 
+# Explore file location to ensure accuracy:
+open.connection("http://artsandsciences.sc.edu/geog/hvri/sites/sc.edu.geog.hvri/files/attachments/SoVI_10_14_Website.pdf")
 
 # Extract the table
 out <- extract_tables(location)
