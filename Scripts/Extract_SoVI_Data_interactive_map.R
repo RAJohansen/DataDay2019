@@ -1,6 +1,6 @@
 #######################
-### Data Day 2019   ###
-###   Power Session ###
+###  Data Day 2019  ###
+###  Power Session  ###
 #######################
 
 # Title: Interactive mapping of social vulnerability caused by climate change using R
@@ -24,12 +24,13 @@ library(dplyr)
 
 # Step 2: Convert a PDF from the web into a usable table 
 # Explore file location to ensure accuracy:
-open.connection("http://artsandsciences.sc.edu/geog/hvri/sites/sc.edu.geog.hvri/files/attachments/SoVI_10_14_Website.pdf")
+website <- "http://artsandsciences.sc.edu/geog/hvri/sites/sc.edu.geog.hvri/files/attachments/SoVI_10_14_Website.pdf"
+browseURL(url = website)
 
 # Extract the table
-out <- extract_tables(location)
+Sovi_table <- extract_tables(website)
 
-final <- do.call(rbind, out[-length(out)])
+final <- do.call(rbind, Sovi_table[-length(Sovi_table)])
 
 # table headers get extracted as rows with bad formatting. Dump them.
 final <- as.data.frame(final[2:nrow(final), ])
