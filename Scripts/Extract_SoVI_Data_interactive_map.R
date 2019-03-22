@@ -61,37 +61,46 @@ names(final) <- headers
 
 ### Step 4: Save the table as a csv 
 # This is helpful for eliminating redundancy and reproducibility
-
-write.csv(final, file='C:/temp/SoVI.csv', row.names=FALSE)
+write.csv(final, file='Data/SoVI.csv', row.names=FALSE)
 
 
 ########################### PART II: Mapping in R ############################# 
 
+# We can start directly from the objects in our working environment
+#Or we can load the data saved in Part 1: Step 4
 
-### Convert SoVI text data to spatial objects ----------------------------------
-#Install Libraries needed
-library(tigris)
-library(tmap)
+### Step 1: Load SoVI data
 
-#Import Data Set
-df <- read.csv('C:/R_Packages/DataDay2019/Data/SoVI.csv')
+# Load data from package location
+df <- read.csv('Data/SoVI.csv')
+# Load data from computer
+#df <- read.csv('C:/temp/my_data/SoVI.csv')
 
-#df <- read.csv('SoVI.csv')
+# Step 2: Load spatial objects into R 
+# In this case we want to load counties
+# The tigris package is connected to the Census's database so we can pull data directly
+# We want to pull the spatial objects counties and save them as an R object 
 
+# NOTE: this might take a couple minutes due to the size of the file
+# Question: How many counties are there in the USA?
 
-#Add column that will match the format of counties spatial object 
-df$GEOID <- df$FIP_Code
-
-#Add Counties Spatial Object Data
 Counties <- counties()
 
-#Merge SoVI with county.region spatial object
+# Lets examine the content of this large file
+# Large SpatialPolygonDataFrame?
+# 3233 elements and 130MB
+
+View(Counties)
+  #Data?
+  #Polygons?
+  #Proj4String?
+
+# Step 3: Merge SoVI csv with our county region spatial object
+# Explain merging works using a common field
 US_SoVI <- merge(Counties,df, by = "GEOID", all = FALSE)
 
-#Plot Map
-map<- qtm(US_SoVI, fill = "CNTY_SoVI")
-map + tm_basemap(server = "OpenTopoMap")
-
+# Step 4: Lets make a simple plot to see the data
+NOT WORKING!!
 
 ################################################
 
@@ -104,7 +113,7 @@ map <- tm_shape(US_SoVI_florida) +
           id = "NAME",
           popup.vars = c("NAME","CNTY_SoVI"))
 
-#State FIP Code for Florida is 39
+#State FIP Code for Ohio is 39
 US_SoVI_Ohio <- US_SoVI[US_SoVI$STATEFP=="39",]
 
 map <- tm_shape(US_SoVI_Ohio) +
