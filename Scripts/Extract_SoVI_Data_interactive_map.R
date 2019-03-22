@@ -65,6 +65,9 @@ names(final) <- headers
 write.csv(final, file='C:/temp/SoVI.csv', row.names=FALSE)
 
 
+########################### PART II: Mapping in R ############################# 
+
+
 ### Convert SoVI text data to spatial objects ----------------------------------
 #Install Libraries needed
 library(tigris)
