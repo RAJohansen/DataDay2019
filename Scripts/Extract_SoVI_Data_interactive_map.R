@@ -14,7 +14,7 @@
 
 ########################### PART I:Data Acquisition############################ 
 
-# Step 1: Install & load required packages 
+### Step 1: Install & load required packages 
 #install.packages(c(tigris,tmap,tidyverse,tablulizer,dplyr))
 library(tigris)
 library(tmap)
@@ -22,29 +22,47 @@ library(tidyverse)
 library(tabulizer)
 library(dplyr)
 
-# Step 2: Convert a PDF from the web into a usable table 
+### Step 2: Extract a web PDF
 # Explore file location to ensure accuracy:
 website <- "http://artsandsciences.sc.edu/geog/hvri/sites/sc.edu.geog.hvri/files/attachments/SoVI_10_14_Website.pdf"
 browseURL(url = website)
 
-# Extract the table
+# Use URL location to extract pdf as a table
+# When you're unfamilar with a function you can use the ?
+?extract_tables
 Sovi_table <- extract_tables(website)
 
+# Lets view what exactly is extracted through this process
+View(Sovi_table)
+
+#What a mess???
+
+### Step 3: Converting the web-based PDF into csv
+
+# Lets use two more functions to convert the extracted table
+# into a more usable and analysis friendly format
+# do.call?
+# rbind?
 final <- do.call(rbind, Sovi_table[-length(Sovi_table)])
 
-# table headers get extracted as rows with bad formatting. Dump them.
+# Reformate table headers by dropping the first row
 final <- as.data.frame(final[2:nrow(final), ])
 
-# Column names
-headers <- c('FIP_Code', 'State_FIP', 'County_FIP', 'County_Name', 'CNTY_SoVI', 
+# Lets lable the column names so they can merged with Census data
+headers <- c('GEOID', 'State_FIP', 'County_FIP', 'County_Name', 'CNTY_SoVI', 
              'Percentile')
 
-# Apply custom column names
+# Apply our names to the data frame
 names(final) <- headers
 
-# Write final table to disk
-write.csv(final, file='C:/temp/SoVI.csv', row.names=FALSE)
 
+# **NOTE** GEOID is the ID code for CENSUS data
+# This is mandatory for the next section
+
+### Step 4: Save the table as a csv 
+# This is helpful for eliminating redundancy and reproducibility
+
+write.csv(final, file='C:/temp/SoVI.csv', row.names=FALSE)
 
 
 ### Convert SoVI text data to spatial objects ----------------------------------
