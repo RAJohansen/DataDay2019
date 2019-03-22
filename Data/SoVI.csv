@@ -1,4 +1,4 @@
-"FIP_Code","State_FIP","County_FIP","County_Name","CNTY_SoVI","Percentile"
+"GEOID","State_FIP","County_FIP","County_Name","CNTY_SoVI","Percentile"
 "01005","01","005","Barbour","-0.930000007","34.8"
 "01027","01","027","Clay","0.150000006","52.8"
 "01091","01","091","Marengo","1.399999976","73.2"
