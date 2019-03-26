@@ -11,8 +11,63 @@
 # Social Vulnerability Data: http://artsandsciences.sc.edu/geog/hvri
 # Code: https://github.com/RAJohansen/DataDay2019
 
+######################### PART 0 :Introduction to R ############################ 
 
-########################### PART I:Data Acquisition############################ 
+# R as a Calculator
+1 + 3
+
+# Creating objects in R
+# Hint alt - is a shortcut for the < - 
+x <- 1+2
+x
+y <- x +1
+y
+
+# Getting Help in R
+help(mean)
+#HINT: if you can't remember exactly what function you are looking for, Use Tab
+me "Tab"
+
+#Not sure what its called 
+#Try a fuzzy search
+apropos("mea") 
+
+# Viewing & Examinging a Data set
+# Lets explore data using a data set thats contained in R
+mtcars  <- mtcars
+
+# View our table
+# Or click the df object under the data window
+View(mtcars)
+
+# Use the names() function to return a list the variables 
+names(mtcars)
+
+#Look at the data types or structure of the data
+str(mtcars)
+# This is very useful when we analyzing or visualizing data
+# Make sure your variables are in the appropiate format!!
+
+## Quick and simple statistical summary of the data
+summary(mtcars)
+
+# Finding values from out data table
+# Lets look at column 2 
+mtcars[,2]
+
+# Lets look at row 5
+mtcars[5,]
+
+# What value is in row 5 column 3?
+mtcars[5,3]
+
+# What if we want to know the max mpg
+max(mtcars$mpg)
+
+##################### PART  I: Plotting using Base R ############################ 
+
+
+########################### PART II:Data Acquisition############################ 
 
 ### Step 1: Install & load required packages 
 #install.packages(c(tigris,tmap,tidyverse,tablulizer,dplyr))
@@ -64,7 +119,7 @@ names(final) <- headers
 write.csv(final, file='Data/SoVI.csv', row.names=FALSE)
 
 
-########################### PART II: Mapping in R ############################# 
+########################### PART III: Mapping in R ############################# 
 
 # We can start directly from the objects in our working environment
 #Or we can load the data saved in Part 1: Step 4
