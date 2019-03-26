@@ -66,6 +66,30 @@ max(mtcars$mpg)
 
 ##################### PART  I: Plotting using Base R ############################ 
 
+### Default Plot
+plot(mtcars$mpg)
+
+## Dotchart ##
+dotchart(mtcars$mpg, labels=row.names(mtcars))
+
+## Histogram ##
+hist(mtcars$mpg)
+
+# Colored Histogram with Different Number of Bins
+hist(mtcars$mpg, breaks=10)
+
+## Scatterplot ##
+plot(mtcars$wt,mtcars$mpg)
+
+## Box Plots ##
+boxplot(mtcars$mpg~mtcars$cyl)
+
+# Boxplot with labels
+boxplot(mpg~cyl,
+        data=mtcars,
+        main="Car Milage Data", 
+        xlab="Number of Cylinders",
+        ylab="Miles Per Gallon")
 
 ########################### PART II:Data Acquisition############################ 
 
