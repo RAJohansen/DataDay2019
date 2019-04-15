@@ -297,4 +297,4 @@ Wickham, H., François, R., Henry, L., Müller, K. (2019). dplyr: A Grammar of D
 
 To cite this work, please use the following entry:
 
-Chalmers, M., & Johansen, R. (2019). Interactive Mapping of Social Vulnerability using R. doi:10.7945/C2897M
+Chalmers, M., & Johansen, R. (2019). Interactive Mapping of Social Vulnerability using R. doi:10.7945/C2897M. http://dx.doi.org/doi:10.7945/C2897M
