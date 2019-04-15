@@ -3,8 +3,8 @@ title: "Interactive Mapping of Social Vulnerability using R"
 author: "University of Cincinnati"
 date: "April 12, 2019"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 subtitle: Mark Chalmers & Richard Johansen
 geometry: margin=3cm
 ---
