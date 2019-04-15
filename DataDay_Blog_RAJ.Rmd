@@ -269,5 +269,31 @@ map_facets_base <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
 tmap_leaflet(map_facets_base)
 ```
 
+## References
 
+Cheng, J., Karambelkar, B., Xie, Y. (2018). leaflet: Create Interactive Web Maps with the JavaScript 'Leaflet' Library. R package version 2.0.2. https://CRAN.R-project.org/package=leaflet
 
+Cutter, S.L., Boruff, B.J., Shirley, W.L. (2003). Social Vulnerability to Environmental Hazards. Social Science Quarterly. https://doi.org/10.1111/1540-6237.8402002
+
+Johansen, R., Chalmers, M. DataDay2019, (2019), GitHub repository, https://github.com/RAJohansen/DataDay2019
+
+Leeper, T.J. (2018). tabulizer: Bindings for Tabula PDF Table Extractor Library. R package version 0.2.2.
+
+Lovelace, R., Nowosad, J., Muenchow, J. (2019) Geocompuation with R. CRC Press. ISBN: 1-138-30451-4. https://geocompr.robinlovelace.net/ 
+
+Pebesma, E., (2018). Simple Features for R: Standardized Support for Spatial Vector Data. The R Journal, https://journal.r-project.org/archive/2018/RJ-2018-009/
+
+Tennekes, M. (2018). “tmap: Thematic Maps in R.” _Journal of Statistical Software_, *84*(6), 1-39. doi: 10.18637/jss.v084.i06 
+(URL: http://doi.org/10.18637/jss.v084.i06).
+
+Walker, K. (2018). tigris: Load Census TIGER/Line Shapefiles. R package version 0.7.2.9000. https://github.com/walkerke/tigris
+
+Wickham, H. (2017). tidyverse: Easily Install and Load the 'Tidyverse'. R package version 1.2.1. https://CRAN.R-project.org/package=tidyverse
+
+Wickham, H., François, R., Henry, L., Müller, K. (2019). dplyr: A Grammar of Data Manipulation. R package version 0.8.0.1. https://CRAN.R-project.org/package=dplyr
+
+## Credit
+
+To cite this work, please use the following entry:
+
+Chalmers, M., & Johansen, R. (2019). Interactive Mapping of Social Vulnerability using R. DOI
