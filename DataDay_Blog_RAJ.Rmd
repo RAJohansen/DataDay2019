@@ -1,0 +1,273 @@
+---
+title: Interactive Mapping of Social Vulnerability using R
+subtitle: "Mark Chalmers & Richard Johansen"
+author: "University of Cincinnati"
+date: "April 12, 2019"
+geometry: margin=3cm
+output:
+  html_document: default
+---
+
+## What to Expect
+
+This document is a supplement to the University of Cincinnati's Power Session workshop presented at Data Day 2019 by Richard Johansen and Mark Chalmers. The goal of this document is to reproduce the step-by-step instructions of the Power Session which demostrated how to create interactive maps of social vulnerability at the county level. Familiarity with [GitHub](https://www.github.com), [R](http://cran.r-project.org/), and [R](https://www.rstudio.com/) enviroments are **highly** recommended, but not required to follow this tutorial. For a more in-depth explanation as to how the data was retrieved, cleaned, and manipulated, please refer to the full R script called *Mapping_Social_Vulnerability.R* located in the *Scripts* folder of the GitHub repository. 
+
+## Getting Started
+
+At this point, you might be asking yourself "What GitHub repository?".
+
+The original script, all of the data, the powerpoint presentation, and supplemental resources used in the workshop can be downloaded from the GitHub repository located [here](https://github.com/RAJohansen/DataDay2019).
+
+The first step towards creating these maps yourself is to clone that repository, extract the files, and open the R project file titled *DataDay2019.Rproj* [How to clone a GitHub Repo](https://help.github.com/en/articles/cloning-a-repository). This should open with Rstudio automatically. If your computer does not recognize the .Rproj file extension, you will have to manually tell your machine to use RStudio to open .Rproj files.
+
+Project files allow users to executue code within scripts that read in the raw or clean data files without changing the directory structure. This coding format was utilized on all the examples and maps throughout the workshop. 
+
+The next step is to make sure the following packages are downloaded and installed in your R environment. To install these packages, run the following line of code. You might already have some packages downloaded on your machine (such as *dplyr* or *tidyverse*) and you should only modify this code if are positive you already have them installed. 
+
+```{r, eval=F, echo=T}
+install.packages(c("tigris","tmap","tidyverse","tabulizer","dplyr","sf","leaflet"))
+```
+
+Not all of these packages will be used in this supplement, but if you want to follow each step in the original script you will need all of these packages. They are also very useful if you work with geospatial data and want to produce maps in R. However, if you are only interested in following this supplementw using the data provided, you will only need the following code to install a subset of packages: 
+
+```{r, eval=F, echo=T}
+install.packages(c("tmap","dplyr","sf","leaflet"))
+```
+
+
+After the packages are installed, the next step is to use the *library* function to make sure we can use the functions these packages provide us. Run the following lines of code and we are ready to get started!
+
+```{r, eval = T, echo = T, results='hide', message=FALSE, warning=FALSE}
+library(tigris)
+library(tmap)
+library(tidyverse)
+library(tabulizer)
+library(dplyr)
+library(sf)
+library(leaflet)
+```
+
+
+## Data Acquisition
+
+The University of South Carolina's Hazards & Vulnerability Research Institute has created the county level social vulnerability data we will be using for this workshop, and made these data publicly available on their [website](http://artsandsciences.sc.edu/geog/hvri/sovi%C2%AE-0). 
+
+If you want to learn more about the theory of social vulnerability and how it is measured, please refer to the original paper titled "Social Vulnerability to Environmental Hazards" which is included in the *Resources* folder of the *DataDay2019* GitHub repository.
+
+The data that was used in the workshop and that is being used to make the maps in this document was scraped directly from the PDF on the website located [here](http://artsandsciences.sc.edu/geog/hvri/sites/sc.edu.geog.hvri/files/attachments/SoVI_10_14_Website.pdf). 
+
+Multiple students at the workshop found this demonstration of scraping data from a pdf on the web useful. The code written below comes directly from the *Mapping_Social_Vulnerability.R* script and shows how to use the *extract_tables* function to scrape the data from the pdf at that website. This is included as an example, but moving forward we will just be reading in the data without going into the retrieval and cleaning process. This is done to simplify the process as much as possible so we can focus our attention on producing the visualizations and learning the syntax of the mapping packages, *tmap* and *leaflet*. If you are curious about the data cleaning process, refer to the full *Mapping_Social_Vulnerability.R* script. 
+
+**Warning:You do not need to run the code in the chunk below to move forward with the rest of the process.**
+
+
+```{r, echo=T, eval=FALSE}
+Sovi_table <- extract_tables("http://artsandsciences.sc.edu/geog/hvri/sites/sc.edu.geog.hvri/files/attachments/SoVI_10_14_Website.pdf")
+
+# Lets use two more functions to convert the extracted table into a more usable and analysis friendly format
+
+final <- do.call(rbind, Sovi_table[-length(Sovi_table)])
+
+# Reformate table headers by dropping the first row
+final <- as.data.frame(final[2:nrow(final), ])
+
+# Lets lable the column names so they can merged with Census data
+headers <- c('GEOID', 'State_FIP', 'County_FIP', 'County_Name', 'CNTY_SoVI', 
+             'Percentile')
+
+# Apply our names to the data frame
+names(final) <- headers
+
+# **NOTE** GEOID is the ID code for CENSUS data
+# This is mandatory for the next section
+
+### Step 4: Save the table as a csv 
+# This is helpful for reproducibility and eliminating redundancy 
+write.csv(final, file='Data/SoVI.csv', row.names=FALSE)
+```
+
+The comma seperated values (.csv) file from the last line of code above is the data that is already saved in the repository you originally downloaded. Instead of repeating the work done above, we suggest just running the line of code directly below and you will read in the cleaned data file into your environment. 
+
+**Hint:** This will only work if you're working from the *DataDay2019.Rproj* discussed in the "Getting Started Section" above.
+
+```{r, echo=T, eval=T}
+df <- read.csv('Data/SoVI.csv')
+```
+The first five rows of the data frame should look like this:
+```{r, eval = T, echo= F}
+head(df)
+
+```
+## Mapping
+
+Now that we have the social vulnerability data, lets move forward and make some maps. Instead of looking at County level information for the entire country, we are going to narrow the scope down to one state. Our example state is Florida but the user could look at any state they please by making very slight modifications to the code. 
+
+The first line of code below reads in the census data from Florida. The *st_read* function is from the *sf* package and is used for reading in geospatial data. The second line takes only the social vulnerability data from our entire data set with State_FIP = 12, which is the U.S. Census's unique identifer for the state of Florida. The next line merges these two data sets together. 
+```{r, echo=T, eval=T, message=F, results = 'hide'}
+Counties_FL <- st_read('Data/Counties_FL.gpkg')
+
+df_FL <- subset(df,State_FIP == "12")
+
+FL_SoVI <- merge(Counties_FL,df_FL, by = "GEOID", all = FALSE)
+```
+
+Now that the spatial data and social vulnerability data is merged together, we can start making maps. This line of code uses base R's most basic plotting function to produce our first map. 
+
+```{r, echo=T, eval=T}
+plot(FL_SoVI[1])
+```
+
+This map has some issues, but you should still be able to tell that it is the state of Florida. The color does not appear to be meaningful but we can fix that. This is a good start because it confirms we are working with the proper spatial data. 
+
+Now we are going to use the *tmap* package which follows Hadley Wickham's [Grammar of graphics](https://vita.had.co.nz/papers/layered-grammar.pdf) which is common to many plotting and visualization packages such as [ggplot2](https://ggplot2.tidyverse.org/reference/ggplot.html). However, the *tmap* package is specially designed for visualizing geospatial data. 
+
+The first map will be basic and then we will add layers. Look closely at the syntax of the following lines of code to see what changes from example to example.
+
+```{r,echo=T, eval=T}
+tm_shape(FL_SoVI) +
+  tm_fill()
+```
+
+Next, we can add county borders by simply adding the argument *tm_borders*.
+```{r, echo=T, eval=T}
+tm_shape(FL_SoVI) +
+  tm_borders() + 
+  tm_fill()
+```
+
+However, this map still doesn't visualize our social vulnerabilty data. What we need to do is specify how the counties are going to be colored/visualized using the *tm_fill* function and the *col =* argument. By defining our color as our county level social vulerability index (CNTY_SoVI), we can now visually explore any trends.
+
+**Hint:** when defining the *col = * argument, you need to specify the column using "".
+
+```{r, echo=T, eval=T, message=F}
+tm_shape(FL_SoVI) +
+  tm_borders() + 
+  tm_fill(col = "CNTY_SoVI")
+```
+
+By adding in the social vulnerability data, *tmap* automatically created a scale and break points. This allows readers of the map to understand the values via the color gradation scale.
+
+The default legends are rarely the best option, so next we will demonstrate how to customize scale and manually define break points.
+
+```{r, echo=T, eval=T, message=F}
+breaks = c(-6,-3,0,3,6)
+tm_shape(FL_SoVI) +
+  tm_borders() + 
+  tm_fill(col = "CNTY_SoVI",breaks = breaks)
+```
+
+The color scheme on this map goes against most people's intuition. In the original data set, positive values correspond to higher vulnerability. Another way to think of this is that negative values correspond to higher resilience, or less vulnerability. We can flip the color scheme to better match our intuition by adding a negative sign to the palette argument. This has the effect of having the red colored counties correspond to the more vulnerable areas and the green colored counties correspond to the more resilient areas.
+
+```{r, echo=T, eval=T, message=F}
+tm_shape(FL_SoVI) +
+  tm_borders() + 
+  tm_fill(col = "CNTY_SoVI",breaks = breaks, palette = "-RdYlGn")
+```
+
+Just for fun, we can choose a completely different color palette and manually make the scale bar continuous. This color scheme has the effect of somewhat deemphasing the more relisient zones by having a dark color gradient occupy the entire negative value regime. It also strongly emphasizes the vulnerable zones by having a rapidly varying light color gradient in the positive regime.  
+
+```{r, echo=T, eval=T}
+tm_shape(FL_SoVI) +
+  tm_borders() + 
+  tm_fill(col = "CNTY_SoVI", style = "cont", palette = "viridis")
+```
+
+Now it is time for some finishing touches. The code below adds a scale bar, a title, and a directional arrow showing North. You should tinker with some of the various values in the code below, such as *legend.title.size* or *inner.margins*, to see the effect it has on the resulting map. 
+
+```{r, echo=T, eval=T}
+
+tm_shape(FL_SoVI) +
+  tm_borders() + 
+  tm_fill(col = "CNTY_SoVI", style = "cont", palette = "viridis") +
+  tm_layout(title = "Florida SoVI Vulnerability Index by County",
+            legend.outside = FALSE,
+            frame = TRUE,
+            inner.margins = 0.1,
+            legend.title.size = 1.5,
+            legend.text.size = 1.1) +
+  tm_compass(type = "arrow", position = c("right", "top"), size = 2) +
+  tm_scale_bar(breaks = c(0, 100, 200),size = 0.8)
+
+```
+
+## Interactive Mapping
+
+The *tmap* package allows users to make much more sophisticated visualizations than base plot. Now that we know how to create these beautiful maps, the next step is to add the extra layer of interactivity so that users can better engage with the visualizations.  
+
+First, convert the static *tmap* object to an interactive map using the *leaflet* package. The *popup.vars* argument of the *tm_fill* function allows us to define what information pops up when the user clicks on a given county. Go ahead and click on a county in the map below, it should give you the name and the specific social vulnerability value for that county. You should also see the name of any given county just by mousing over it.
+
+```{r, echo=T, eval=T, message=F}
+map <- tm_shape(FL_SoVI) +
+  tm_borders() +
+  tm_fill(col = "CNTY_SoVI",
+          palette = "-RdYlGn",
+          id = "NAME",
+          popup.vars = c("NAME","CNTY_SoVI"))
+
+tmap_leaflet(map)
+```
+
+Next we are going to create a more complex map with leaflet. We are also going to add population data and very approximate sea level rise predictions. These were made intentionally jagged to greatly reduce the file size (original data is over 100MB).  
+
+The code below reads in the Florida population data that is included in the repository and merges it with the spatial data.
+
+```{r, echo=T, eval=T, message = F}
+FL_pop <- read.csv("Data/FL_Population.csv")
+
+FL_pop$NAMELSAD <- FL_pop$County
+
+FL_SoVI <- merge(FL_SoVI,FL_pop, by = "NAMELSAD", all = FALSE)
+```
+
+Read the sea level data into the working environment as well so that it can be added to the visualizations. 
+
+```{r, echo=T, eval=T, message = F, results = 'hide'}
+FL_slr_10ft <- st_read("Data/FL_slr_10ft.gpkg")
+```
+
+The following code creates duplicate maps so we can do a side by side comparison of social vulnerability and population with the projected sea level rise overlayed. Try and look closely at the syntax to get an idea of what is going on. 
+
+```{r, echo=T, eval=T, message = F, fig.width=14, fig.height=14}
+facets  <- c("CNTY_SoVI","Population")
+
+map_facets <- tm_shape(FL_SoVI) +
+  tm_borders() +
+  tm_fill(col = facets,
+          palette = "-RdYlGn",
+          id = "NAME",
+          popup.vars = c("NAME","CNTY_SoVI", "Population")) +
+  tm_shape(FL_slr_10ft) +
+    tm_polygons(col = "blue", alpha = 0.75) +
+  tm_facets(nrow = 1, sync = TRUE, free.scales.fill =TRUE)
+
+tmap_leaflet(map_facets)
+
+```
+
+Remember you can always check the documentation if you do not know what a specific function is doing. For example, to get more clarification on what *tm_facets* is doing, you can run the following line of code and it will open up the documentation.
+```{r, echo=T, eval=F}
+??tm_facets
+```
+There is a lot to explore in the map above. For example, you can use the scroll wheel on your mouse to zoom in and out. You can also click on a county to get the vulnerability measure and we added the population to this pop out box as an additional example. On the left hand side of either of the maps is a box with 3 squares layered on top of each other. By clicking on that, you can toggle on or off the sea level projections, the county level vulnerability measurements, and change the background map. 
+
+
+For the last map, this code shows you how to change the basemap that is underneath the interactive map. 
+
+```{r, echo=T, eval=T, message = F, warning=F, fig.width=14, fig.height=14}
+map_facets_base <- tm_basemap(leaflet::providers$Esri.WorldImagery) + 
+  tm_shape(FL_SoVI) +
+  tm_polygons(facets) +
+  tm_borders() +
+  tm_fill(col = facets,
+          id = "NAME",
+          palette = "-RdYlGn",
+          popup.vars = c("NAME","CNTY_SoVI", "Population")) +
+  tm_shape(FL_slr_10ft) +
+  tm_polygons(col = "blue", alpha = 0.75) +
+  tm_facets(nrow = 1, sync = TRUE)
+
+tmap_leaflet(map_facets_base)
+```
+
+
+
