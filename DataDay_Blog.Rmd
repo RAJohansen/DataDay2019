@@ -19,7 +19,7 @@ At this point, you might be asking yourself "What GitHub repository?".
 
 The original script, all of the data, the PowerPoint presentation, and supplemental resources used in the workshop can be downloaded from the GitHub repository located [here](https://github.com/RAJohansen/DataDay2019).
 
-The first step towards creating these maps yourself is to clone that repository, extract the files, and open the R project file titled *DataDay2019.Rproj* [How to clone a GitHub Repo](https://help.github.com/en/articles/cloning-a-repository). This should open with RStudio automatically. If your computer does not recognize the .Rproj file extension, you will have to manually tell your machine to use RStudio to open .Rproj files.
+The first step towards creating these maps yourself is to clone that repository, extract the files, and open the R project file titled *DataDay2019.Rproj*. For additional help, see [How to clone a GitHub Repo](https://help.github.com/en/articles/cloning-a-repository). The R project file should open with RStudio automatically. If your computer does not recognize the .Rproj file extension, you will have to manually tell your machine to use RStudio to open .Rproj files.
 
 Project files allow users to execute code within scripts that read in the raw or clean data files without changing the directory structure. This coding format was utilized on all the examples and maps throughout the workshop. 
 
