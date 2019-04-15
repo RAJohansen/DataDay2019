@@ -276,7 +276,7 @@ Cheng, J., Karambelkar, B., Xie, Y. (2018). leaflet: Create Interactive Web Maps
 
 Cutter, S.L., Boruff, B.J., Shirley, W.L. (2003). Social Vulnerability to Environmental Hazards. Social Science Quarterly. https://doi.org/10.1111/1540-6237.8402002
 
-Johansen, R., Chalmers, M. DataDay2019, (2019), GitHub repository, https://github.com/RAJohansen/DataDay2019
+Johansen, R., Chalmers, M. DataDay2019, (2019), GitHub repository, https://github.com/RAJohansen/DataDay2019. https://doi.org/10.5281/zenodo.2640938
 
 Leeper, T.J. (2018). tabulizer: Bindings for Tabula PDF Table Extractor Library. R package version 0.2.2.
 
